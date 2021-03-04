@@ -5,13 +5,12 @@ import java.awt.event.WindowEvent;
 
 public class MainMenu extends JFrame {
 	private JPanel mainPanel;
-	private JPanel HeaderPanel;
-	private JPanel BodyPanel;
-	private JLabel HeaderLabel;
+	private JPanel bodyPanel;
 	private JButton registerButton;
 	private JButton loginButton;
 	private JButton exitButton;
 	private JPanel footerPanel;
+	private JPanel leftPanel;
 	
 	public MainMenu() {
 		super("Minesweeper | Main Menu");
