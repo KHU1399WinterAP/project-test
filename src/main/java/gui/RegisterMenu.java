@@ -1,11 +1,19 @@
 package main.java.gui;
 
+import main.java.animations.ColorChangeAnimation;
 import main.java.database.Database;
+import main.java.errors.GuiError;
 import main.java.models.User;
+import main.java.utils.GuiUtils;
+import main.java.utils.GuiValidation;
 
 import javax.swing.*;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
+
+import java.awt.*;
+import java.util.function.Consumer;
+
+import static main.java.config.GuiConfig.COLOR_DANGER;
+import static main.java.config.GuiConfig.COLOR_GRAY_10;
 
 public class RegisterMenu extends JFrame {
 	private JTextField usernameTextField;
@@ -13,13 +21,18 @@ public class RegisterMenu extends JFrame {
 	private JButton registerButton;
 	private JButton mainMenuButton;
 	private JPanel mainPanel;
+	private JPanel usernamePanel;
+	private JPanel passwordPanel;
+	private JPanel buttonsPanel;
+	private JLabel usernameErrorLabel;
+	private JLabel passwordErrorLabel;
 	
-	private final JFrame PREVIOUS_FRAME;
+	private final JFrame MAIN_MENU_FRAME;
 	
-	public RegisterMenu(JFrame PREVIOUS_FRAME) {
+	public RegisterMenu(JFrame mainMenuFrame) {
 		super("Minesweeper | Register Menu");
 		
-		this.PREVIOUS_FRAME = PREVIOUS_FRAME;
+		this.MAIN_MENU_FRAME = mainMenuFrame;
 		
 		setContentPane(mainPanel);
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -27,7 +40,16 @@ public class RegisterMenu extends JFrame {
 		pack();
 		setLocationRelativeTo(null);
 		
+		initComponentProperties();
 		initListeners();
+	}
+	
+	private void initComponentProperties() {
+		usernameTextField.setBorder(null);
+		passwordField.setBorder(null);
+		
+		GuiUtils.makeMenuButton(registerButton);
+		GuiUtils.makeMenuButton(mainMenuButton);
 	}
 	
 	private void initListeners() {
@@ -37,55 +59,26 @@ public class RegisterMenu extends JFrame {
 	}
 	
 	private void initWindowListeners() {
-		this.addWindowListener(
-				new WindowListener() {
-					@Override
-					public void windowOpened(WindowEvent e) {
-					
-					}
-					
-					@Override
-					public void windowClosing(WindowEvent e) {
-						closeWindow();
-					}
-					
-					@Override
-					public void windowClosed(WindowEvent e) {
-					
-					}
-					
-					@Override
-					public void windowIconified(WindowEvent e) {
-					
-					}
-					
-					@Override
-					public void windowDeiconified(WindowEvent e) {
-					
-					}
-					
-					@Override
-					public void windowActivated(WindowEvent e) {
-					
-					}
-					
-					@Override
-					public void windowDeactivated(WindowEvent e) {
-					
-					}
-				}
-		);
+		GuiUtils.addWindowClosingListener(this, e -> closeWindow());
 	}
 	
 	private void initRegisterButtonListeners() {
 		registerButton.addActionListener(
 				e -> {
-					User user = new User(usernameTextField.getText(), passwordField.getPassword());
-					System.out.println(user);
+					var username = usernameTextField.getText();
+					var password = String.valueOf(passwordField.getPassword());
 					
-					Database.insertIntoUser(user);
+					var usernameError = GuiValidation.validateUsername(username);
+					var passwordError = GuiValidation.validatePassword(password);
 					
-					closeWindow();
+					if (usernameError == null && passwordError == null) {
+						Database.insertIntoUser(new User(username, password));
+						closeWindow();
+					} else {
+						runMainPanelBackgroundColorAnimation();
+						updateErrorLabel(usernameError, usernameErrorLabel);
+						updateErrorLabel(passwordError, passwordErrorLabel);
+					}
 				}
 		);
 	}
@@ -94,8 +87,21 @@ public class RegisterMenu extends JFrame {
 		mainMenuButton.addActionListener(e -> closeWindow());
 	}
 	
+	private void runMainPanelBackgroundColorAnimation() {
+		Consumer<Color> stepCallback = (color) -> mainPanel.setBackground(color);
+		Runnable endCallback = () -> mainPanel.setBackground(COLOR_GRAY_10);
+		new ColorChangeAnimation(mainPanel.getBackground(), COLOR_DANGER, stepCallback, endCallback).start();
+	}
+	
+	private void updateErrorLabel(GuiError error, JLabel errorLabel) {
+		if (error != null)
+			errorLabel.setText(error.getMessage());
+		else
+			errorLabel.setText("");
+	}
+	
 	private void closeWindow() {
 		this.dispose();
-		PREVIOUS_FRAME.setVisible(true);
+		MAIN_MENU_FRAME.setVisible(true);
 	}
 }

@@ -9,10 +9,6 @@ public class User {
 		this.password = password;
 	}
 	
-	public User(String username, char[] password) {
-		this(username, String.valueOf(password));
-	}
-	
 	@Override
 	public String toString() {
 		return "User{" +

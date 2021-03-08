@@ -55,11 +55,12 @@ public class Database {
 			
 			ResultSet resultSet = statement.executeQuery();
 			
-			resultSet.next();
-			return new User(resultSet.getString("username"), resultSet.getString("password"));
+			if (resultSet.next())
+				return new User(resultSet.getString("username"), resultSet.getString("password"));
 		} catch (SQLException throwables) {
 			throwables.printStackTrace();
-			return null;
 		}
+		
+		return null;
 	}
 }

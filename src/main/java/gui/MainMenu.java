@@ -1,15 +1,14 @@
 package main.java.gui;
 
+import main.java.utils.GuiUtils;
+
 import javax.swing.*;
-import java.awt.event.WindowEvent;
 
 public class MainMenu extends JFrame {
 	private JPanel mainPanel;
-	private JPanel bodyPanel;
+	private JPanel rightPanel;
 	private JButton registerButton;
 	private JButton loginButton;
-	private JButton exitButton;
-	private JPanel footerPanel;
 	private JPanel leftPanel;
 	
 	public MainMenu() {
@@ -17,17 +16,23 @@ public class MainMenu extends JFrame {
 		
 		setContentPane(mainPanel);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setResizable(false);
 		
 		pack();
 		setLocationRelativeTo(null);
 		
+		initComponentProperties();
 		initListeners();
+	}
+	
+	private void initComponentProperties() {
+		GuiUtils.makeMenuButton(registerButton);
+		GuiUtils.makeMenuButton(loginButton);
 	}
 	
 	private void initListeners() {
 		initRegisterButtonListeners();
 		initLoginButtonListeners();
-		initExitButtonListeners();
 	}
 	
 	private void initRegisterButtonListeners() {
@@ -48,10 +53,5 @@ public class MainMenu extends JFrame {
 					loginMenu.setVisible(true);
 				}
 		);
-	}
-	
-	private void initExitButtonListeners() {
-		exitButton.addActionListener(e -> dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING)));
-		exitButton.addActionListener(e -> System.out.println("Exiting ..."));
 	}
 }

@@ -1,13 +1,19 @@
 package main.java.app;
 
-import com.formdev.flatlaf.FlatLightLaf;
+import main.java.config.LanguageConfig;
 import main.java.gui.MainMenu;
+import main.java.utils.GuiUtils;
 
 public class Main {
 	public static void main(String[] args) {
-		FlatLightLaf.install();
+		init();
 		
 		MainMenu mainMenu = new MainMenu();
 		mainMenu.setVisible(true);
+	}
+	
+	private static void init() {
+		GuiUtils.init();
+		LanguageConfig.init();
 	}
 }
